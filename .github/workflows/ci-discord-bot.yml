@@ -1,0 +1,36 @@
+name: CI - discord_bot (Gradle)
+
+on:
+  push:
+    paths:
+      - "discord_bot/**"
+      - ".github/workflows/ci-discord-bot.yml"
+  pull_request:
+    paths:
+      - "discord_bot/**"
+      - ".github/workflows/ci-discord-bot.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: discord_bot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Build project
+        run: ./gradlew clean build --no-daemon
