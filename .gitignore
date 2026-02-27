@@ -1,0 +1,22 @@
+﻿# secrets
+.env
+*.env
+**/.env
+
+# logs
+*.log
+logs/
+**/logs/
+
+# python
+__pycache__/
+.venv/
+
+# java/spring
+**/build/
+**/out/
+**/target/
+
+#doxygen
+doxygen/
+latex/

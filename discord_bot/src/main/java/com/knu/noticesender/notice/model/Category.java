@@ -1,0 +1,31 @@
+package com.knu.noticesender.notice.model;
+
+
+public enum Category implements Convertible {
+    ALL("전체", "전체"),
+    NORMAL("일반공지", "일반"),
+    STUDENT("학사", "학사"),
+    SCHOLARSHIP("장학", "장학"),
+    SIM_COM("심컴", "심컴"),
+    GL_SOP("글솝", "글솝"),
+    GRADUATE_SCHOOL("대학원", "대학원"),
+    GRADUATE_CONTRACT("대학원 계약학과", "대학원 계약학과"),
+    IN_COM("인컴", "인컴"),
+    ICT("대구형 계약학과[ICT융합학과]", "ICT융합학과"),
+    RECRUITING("학부인재모집", "학부인재모집"),
+    SEMINAR_EVENT("세미나/행사", "세미나/행사"),
+    EMPLOYMENT_INFO("취업정보", "취업정보"),
+    SCHOOL_NEWS("학부소식", "학부소식");
+
+    private final String dbData;
+    private final String desc;
+
+    Category (String dbData, String desc) {
+        this.dbData = dbData;
+        this.desc = desc;
+    }
+
+    @Override
+    public String getDbData() {return dbData;}
+    public String getDesc() {return this.desc;}
+}

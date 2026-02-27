@@ -1,0 +1,49 @@
+discord:
+  urls:
+    all: ${DISCORD_ALL}
+    student: ${DISCORD_STUDENT}
+    normal: ${DISCORD_NORMAL}
+    scholarship: ${DISCORD_SCHOLARSHIP}
+    sim-com: ${DISCORD_SIM_COM}
+    gl-sop: ${DISCORD_GL_SOP}
+    graduate: ${DISCORD_GRADUATE}
+    graduate-contract: ${DISCORD_GRADUATE_CONTRACT}
+
+    #추가
+    in-com: ${DISCORD_IN_COM}
+    ict: ${DISCORD_ICT}
+    recruiting: ${DISCORD_RECRUITING}
+    seminar-event: ${DISCORD_SEMINAR_EVENT}
+    employment-info: ${DISCORD_EMPLOYMENT_INFO}
+    school-news: ${DISCORD_SCHOOL_NEWS}
+
+server:
+  port: ${PORT}
+
+springdoc:
+  swagger-ui:
+    path: swagger.html
+    operations-sorter: method
+  #  version: v1
+  paths-to-match: /api/**
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+logging:
+  level:
+    root: debug
+  config:
+    path: ./logs
