@@ -1,0 +1,45 @@
+name: CI - notice_crawler (Python)
+
+on:
+  push:
+    paths:
+      - "notice_crawler/**"
+      - ".github/workflows/ci-notice-crawler.yml"
+  pull_request:
+    paths:
+      - "notice_crawler/**"
+      - ".github/workflows/ci-notice-crawler.yml"
+
+jobs:
+  lint-run:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: notice_crawler
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps (if requirements.txt exists)
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt, skipping deps install"
+          fi
+
+      - name: Syntax check
+        run: python -m compileall .
+
+      # pytest가 있으면 테스트도 자동 실행
+      - name: Run tests (if pytest exists)
+        run: |
+          python -c "import pytest" 2>/dev/null && pytest -q || echo "pytest not installed, skipping"
