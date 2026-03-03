@@ -1,0 +1,41 @@
+name: Build & Push discord-be (GHCR)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "discord_bot/**"
+      - ".github/workflows/push-discord-be.yml"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set timestamp
+        id: ts
+        run: echo "TAG=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: |
+          docker build \
+            -t ghcr.io/committee-of-system-library/discord-be:latest \
+            -t ghcr.io/committee-of-system-library/discord-be:${{ steps.ts.outputs.TAG }} \
+            ./discord_bot
+
+      - name: Push
+        run: |
+          docker push ghcr.io/committee-of-system-library/discord-be:latest
+          docker push ghcr.io/committee-of-system-library/discord-be:${{ steps.ts.outputs.TAG }}
