@@ -5,6 +5,9 @@ WORKDIR /app
 COPY build.gradle settings.gradle gradlew gradlew.bat /app/
 COPY gradle /app/gradle
 
+# gradlew 실행권한 부여 (Linux에서 Permission denied 방지)
+RUN chmod +x /app/gradlew
+
 # dependency cache (실패해도 진행)
 RUN ./gradlew --no-daemon dependencies || true
 
