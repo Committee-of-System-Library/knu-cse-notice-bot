@@ -15,7 +15,9 @@ public enum Category implements Convertible {
     RECRUITING("학부인재모집", "학부인재모집"),
     SEMINAR_EVENT("세미나/행사", "세미나/행사"),
     EMPLOYMENT_INFO("취업정보", "취업정보"),
-    SCHOOL_NEWS("학부소식", "학부소식");
+    SCHOOL_NEWS("학부소식", "학부소식"),
+    PL_SOP("플솝","플솝"),
+    CHEOM_COM("첨컴","첨컴");
 
     private final String dbData;
     private final String desc;

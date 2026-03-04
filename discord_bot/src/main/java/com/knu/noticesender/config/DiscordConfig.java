@@ -37,6 +37,11 @@ public class DiscordConfig {
     private String employmentInfoUrl;
     @Value("${discord.urls.school-news}")
     private String schoolNewsUrl;
+    @Value("${discord.urls.pl-sop}")
+    private String plSopUrl;
+    @Value("${discord.urls.cheom-com}")
+    private String cheomComUrl;
+
 
 
     @Bean
@@ -56,6 +61,8 @@ public class DiscordConfig {
         urls.put(Category.SEMINAR_EVENT, seminarEventUrl);
         urls.put(Category.EMPLOYMENT_INFO, employmentInfoUrl);
         urls.put(Category.SCHOOL_NEWS, schoolNewsUrl);
+        urls.put(Category.PL_SOP, plSopUrl);
+        urls.put(Category.CHEOM_COM,cheomComUrl);
 
 
         return new CategoryUrlMapper(urls);
