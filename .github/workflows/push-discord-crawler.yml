@@ -1,14 +1,22 @@
 name: Build & Push discord-crawler (GHCR)
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "notice_crawler/**"
-      - ".github/workflows/push-discord-crawler.yml"
+  workflow_run:
+    workflows: ["CI - notice_crawler (Python)"]
+    types:
+      - completed
+
+env:
+  REGISTRY: ghcr.io
+  ORG: committee-of-system-library
+  IMAGE_NAME: discord-crawler
 
 jobs:
-  docker:
+  build-docker-image:
+    if: >
+      github.event.workflow_run.conclusion == 'success' && 
+      github.event.workflow_run.head_branch == 'main'
+      
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -24,18 +32,18 @@ jobs:
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: $REGISTRY
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: |
           docker build \
-            -t ghcr.io/committee-of-system-library/discord-crawler:latest \
-            -t ghcr.io/committee-of-system-library/discord-crawler:${{ steps.ts.outputs.TAG }} \
+            -t $REGISTRY/$ORG/$IMAGE_NAME:latest \
+            -t $REGISTRY/$ORG/$IMAGE_NAME:${{ steps.ts.outputs.TAG }} \
             ./notice_crawler
 
       - name: Push
         run: |
-          docker push ghcr.io/committee-of-system-library/discord-crawler:latest
-          docker push ghcr.io/committee-of-system-library/discord-crawler:${{ steps.ts.outputs.TAG }}
+          docker push $REGISTRY/$ORG/$IMAGE_NAME:latest
+          docker push $REGISTRY/$ORG/$IMAGE_NAME:${{ steps.ts.outputs.TAG }}
