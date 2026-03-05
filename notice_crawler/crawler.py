@@ -9,7 +9,7 @@ URLs = {
         '학부인재모집': 'https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_3_a&page=',
         '취업정보': 'https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_3_b&page=',
         '세미나/행사':'https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_4&page=', # 추가
-        '학부소식' : '학부소식": "https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_2_a&page=',
+        '학부소식' : 'https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_2_a&page=',
     }
 
 CATEGORY_ALIAS = {
@@ -107,7 +107,7 @@ class Crawler:
         #
         # Notice) 공지사항 페이지에 표시된 시간은 적절한 형태로 수정됩니다. (YY-DD-MM HH:MM -> YYYY-DD-MM HH:MM:00)
         #
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         content = soup.select_one('#bo_v_con').get_text(strip=True).replace('\xa0', '')
         created_time = '20' + soup.select_one('.if_date').text.replace('작성일 ', '') + ':00' 
@@ -146,7 +146,14 @@ class Crawler:
             num = re.split("&wr_id=", link)[1] # 공지 URL에서 공지글 Number 추출
             if (type == '공지사항'):
                 cate_text = noticeInfo.find('a', class_='bo_cate_link').get_text(strip=True)
+                #--------전처리--------
+                # [구.심컴] 같은 설명 제거
+                cate_text = re.sub(r"\[.*?\]", "", cate_text)
+                # 공백 및 특수공백 제거
+                cate_text = cate_text.replace("\xa0", " ").strip()
+
                 category = CATEGORY_ALIAS[cate_text] # 각 공지에 지정되어 있는 카테고리 추출
+
             else:
                 category = CATEGORY_ALIAS[type] #수정
             content, created_time = self.__get_content_and_created_time_of_notice(link) # 각 공지의 내용(Content) 및 작성 시간 (Created Time) 추출
