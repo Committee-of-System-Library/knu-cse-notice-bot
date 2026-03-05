@@ -149,8 +149,10 @@ class Crawler:
                 #--------전처리--------
                 # [구.심컴] 같은 설명 제거
                 cate_text = re.sub(r"\[.*?\]", "", cate_text)
-                # 공백 및 특수공백 제거
-                cate_text = cate_text.replace("\xa0", " ").strip()
+                # 정규화 후 공백 및 특수공백 제거
+                cate_text = unicodedata.normalize("NFKC", cate_text)
+                cate_text = cate_text.replace("\xa0", " ").replace("\u200b", "").replace("\ufeff", "")
+                cate_text = re.sub(r"\s+", " ", cate_text).strip()
 
                 category = CATEGORY_ALIAS[cate_text] # 각 공지에 지정되어 있는 카테고리 추출
 
