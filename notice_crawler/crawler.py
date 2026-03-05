@@ -24,7 +24,7 @@ CATEGORY_ALIAS = {
     '대학원 계약학과' : 'GRADUATE_CONTRACT',
 
     # 추가
-    '대구형 계약학과[ICT 융합학과]' : 'ICT',
+    'ICT융합[학부]' : 'ICT',
     '학부인재모집': 'RECRUITING',
     '세미나/행사': 'SEMINAR_EVENT',
     '취업정보': 'EMPLOYMENT_INFO',
