@@ -53,10 +53,15 @@ formatter = logging.Formatter(
     "%(asctime)s [%(levelname)s] %(message)s"
 )
 
+class InfoOnlyFilter(logging.Filter):
+    def filter(self, record):
+        return record.levelno == logging.INFO
+    
 # 일반 로그
 general_handler = logging.FileHandler("logs/general.log")
 general_handler.setLevel(logging.INFO)
 general_handler.setFormatter(formatter)
+general_handler.addFilter(InfoOnlyFilter())
 
 # 에러 로그
 error_handler = logging.FileHandler("logs/error.log")
@@ -90,5 +95,5 @@ if __name__ == "__main__":
         except Exception:
             logger.error("Error occurred during crawling", exc_info=True)
 
-        logger.info(f"Sleep {INTERVAL} minutes")
+        logger.info(f"Sleep {INTERVAL} minutes\n")
         time.sleep(INTERVAL * 60)
