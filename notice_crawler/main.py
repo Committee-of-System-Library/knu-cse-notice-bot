@@ -1,3 +1,4 @@
+import logging
 import sys
 import os
 from datetime import datetime
@@ -21,6 +22,8 @@ from notice import *
     python main.py -Recruiting
     python main.py -Employment
 """
+
+logger = logging.getLogger("crawler")
 
 crawler = Crawler()
 url = os.environ['API_URL']
@@ -51,24 +54,26 @@ def run(typeSelect: str):
     #    
     match (typeSelect):
         case '-Notice':
-            print(f'\n{datetime.now()} - Start crawling ({typeSelect[1:]})')
+            logger.info(f"Start crawling ({typeSelect[1:]})")
             noticeList = crawler.get_all_notice(type='공지사항', noticeCnt=int(noticeCnt))
         case '-Recruiting':
-            print(f'\n{datetime.now()} - Start crawling ({typeSelect[1:]})')
+            logger.info(f"Start crawling ({typeSelect[1:]})")
             noticeList = crawler.get_all_notice(type='학부인재모집', noticeCnt=int(recruitingCnt))
         case '-Employment':
-            print(f'\n{datetime.now()} - Start crawling ({typeSelect[1:]})')
+            logger.info(f"Start crawling ({typeSelect[1:]})")
             noticeList = crawler.get_all_notice(type='취업정보', noticeCnt=int(employmentCnt))
         case _:
-            print("Usage:", sys.argv[0], "-[ Notice | Recruiting | Employment ]\n")
+            logger.warning("Usage: python main.py -[ Notice | Recruiting | Employment ]")
             return
-    print(f'{datetime.now()} - Finish crawling ({typeSelect[1:]})')
+    logger.info(f"Finish crawling ({typeSelect[1:]})")
+    
     response = crawler.send_notice_to_api(url, noticeList)
-    print(f'{datetime.now()} - Finish sending ({typeSelect[1:]}) - {response}')
+    logger.info(f"Finish sending ({typeSelect[1:]}) - status={response.status_code}")
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print("Usage:", sys.argv[0], "-[ Notice | Recruiting | Employment ]\n")
+
     else:
         run(sys.argv[1])
 

@@ -1,9 +1,12 @@
+import logging
 import requests
 from bs4 import BeautifulSoup
 import re
 import unicodedata
 
 from notice import *
+
+logger = logging.getLogger("crawler")
 
 URLs = {
         '공지사항': 'https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_1&page=',
@@ -147,15 +150,15 @@ class Crawler:
             num = re.split("&wr_id=", link)[1] # 공지 URL에서 공지글 Number 추출
             if (type == '공지사항'):
                 cate_text = noticeInfo.find('a', class_='bo_cate_link').get_text(strip=True)
-                #--------전처리--------
-                # [구.심컴] 같은 설명 제거
-                cate_text = re.sub(r"\[.*?\]", "", cate_text)
-                # 정규화 후 공백 및 특수공백 제거
-                cate_text = unicodedata.normalize("NFKC", cate_text)
-                cate_text = cate_text.replace("\xa0", " ").replace("\u200b", "").replace("\ufeff", "")
-                cate_text = re.sub(r"\s+", " ", cate_text).strip()
 
-                category = CATEGORY_ALIAS.get(cate_text, "NORMAL")# 각 공지에 지정되어 있는 카테고리 추출
+                category = CATEGORY_ALIAS.get(cate_text)# 각 공지에 지정되어 있는 카테고리 추출
+                
+                logger.info(f"Detected category text: {cate_text}")
+                logger.info(f"Mapped category: {category}")
+                
+                if category is None:
+                    logger.warning(f"Unknown category detected: {cate_text}")
+                    category="NORMAL"
 
             else:
                 category = CATEGORY_ALIAS[type] #수정
@@ -181,6 +184,9 @@ class Crawler:
         #
         # Notice) __parse_notice_of_each_page() 함수에 의해 공지사항 목록이 만들어집니다.
         #
+
+        logger.info(f"Start crawling {type}")
+
         noticeList = list()
         pageNum = 1
         self.__get_max_count_of_notice_per_page(type=type) # 페이지당 최대 공지 수 업데이트
@@ -194,6 +200,7 @@ class Crawler:
             noticeCnt -= crawledCnt # 가져와야 할 공자사항 수에서 가져온 공지사항 수를 빼기
             pageNum += 1 # 페이지 갱신
             
+        logger.info(f"Finish crawling {type} - collected {len(noticeList)} notices")
         return noticeList
     
     def send_notice_to_api(self, BE_url: str, noticeList: list[Notice]) -> int:
@@ -206,10 +213,20 @@ class Crawler:
         #
         # Return) Discord BackEnd로부터 수신한 Status Code (Type: INT)
         #
-        response = requests.post(
-            BE_url, 
-            json={'data': [notice.__dict__ for notice in noticeList]}, 
-            headers={'Content-Type': 'application/json'}
-            )
+        try:
+            response = requests.post(
+                BE_url, 
+                json={'data': [notice.__dict__ for notice in noticeList]}, 
+                headers={'Content-Type': 'application/json'}
+                )
+            
+            if response.status_code == 200:
+                logger.info(f"Send success - status={response.status_code}")
+            else:
+                logger.error(f"Send failed - status={response.status_code}")
 
-        return response
+            return response
+        except Exception:
+            logger.exception("Error while sending notice to API")
+            raise
+        
