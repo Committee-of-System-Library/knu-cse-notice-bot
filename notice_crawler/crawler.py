@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import unicodedata
 
 from notice import *
 
@@ -107,7 +108,7 @@ class Crawler:
         #
         # Notice) 공지사항 페이지에 표시된 시간은 적절한 형태로 수정됩니다. (YY-DD-MM HH:MM -> YYYY-DD-MM HH:MM:00)
         #
-        response = requests.get(url, verify=False)
+        response = requests.get(url, verify=True)
         soup = BeautifulSoup(response.text, 'html.parser')
         content = soup.select_one('#bo_v_con').get_text(strip=True).replace('\xa0', '')
         created_time = '20' + soup.select_one('.if_date').text.replace('작성일 ', '') + ':00' 
